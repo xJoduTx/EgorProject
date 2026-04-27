@@ -9,7 +9,9 @@ import ru.nssl.league_api.entity.NewsFile;
 import ru.nssl.league_api.enums.FileType;
 import ru.nssl.league_api.repository.NewsRepository;
 
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -40,12 +42,6 @@ public class NewsService {
                 for (MultipartFile file : files) {
 
                     if (file == null || file.isEmpty()) continue;
-
-                    String originalName = file.getOriginalFilename() != null ? file.getOriginalFilename() : "file";
-
-                    String safeName = originalName
-                            .replaceAll("[—–«»\"']", "-")           // заменяем проблемные тире и кавычки
-                            .replaceAll("[^a-zA-Z0-9._-]", "_");    // оставляем только безопасные символы
 
                     String filename = UUID.randomUUID()
                             + "_" + file.getOriginalFilename();
@@ -84,11 +80,11 @@ public class NewsService {
     }
 
     public List<News> getLatestNews(int limit) {
-        return newsRepository.findAll()
-                .stream()
-                .sorted((a, b) -> b.getId().compareTo(a.getId()))
-                .limit(limit)
-                .toList();
+        List<News> news = newsRepository.findTop6ByOrderByCreatedAtDesc();
+        if (news.size() > limit) {
+            return news.subList(0, limit);
+        }
+        return news;
     }
 
     public News getNewsById(Long id) {

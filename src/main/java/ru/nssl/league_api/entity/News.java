@@ -2,7 +2,6 @@ package ru.nssl.league_api.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import ru.nssl.league_api.enums.NewsCategory;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

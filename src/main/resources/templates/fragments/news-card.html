@@ -15,13 +15,13 @@
                  alt="Фото новости">
         </div>
 
-        <!-- Плейсхолдер, если нет картинок -->
+        <!-- Плейсхолдер -->
         <img th:if="${news == null or news.files == null or #lists.isEmpty(news.files)}"
              th:src="@{/resources/no-image.png}"
              class="news-image"
              alt="Нет изображения">
 
-        <!-- Кнопки навигации по фото -->
+        <!-- Кнопки -->
         <button class="img-btn left" onclick="moveImg(this, -1)" aria-label="Предыдущее фото">‹</button>
         <button class="img-btn right" onclick="moveImg(this, 1)" aria-label="Следующее фото">›</button>
     </div>
@@ -31,24 +31,16 @@
         <h3 th:text="${news != null ? news.title : 'Без заголовка'}"></h3>
         <p th:text="${news != null ? news.shortDescription : 'Описание отсутствует'}"></p>
 
-        <!-- Ссылка -->
         <a th:if="${news != null and news.externalLink != null}"
            th:href="${news.externalLink}"
-           target="_blank" class="read-more">
-            Перейти →
-        </a>
+           target="_blank" class="read-more">Перейти →</a>
         <a th:if="${news != null and news.externalLink == null}"
            th:href="@{/news/{id}(id=${news.id})}"
-           class="read-more">
-            Читать →
-        </a>
+           class="read-more">Читать →</a>
 
-        <!-- Кнопка скачивания всех файлов -->
         <div th:if="${news != null and news.files != null and !#lists.isEmpty(news.files)}" style="margin-top: 12px;">
             <a th:href="@{/files/news/{id}/download-all(id=${news.id})}"
-               class="download-btn">
-                Скачать вложения (ZIP)
-            </a>
+               class="download-btn">Скачать вложения (ZIP)</a>
         </div>
     </div>
 </div>

@@ -75,9 +75,9 @@
 
             <!-- СЛАЙДЕР НОВОСТЕЙ -->
             <div class="slider" id="newsSlider" th:if="${newsList != null and !#lists.isEmpty(newsList)}">
-                <div th:each="news : ${newsList}">
+                <th:block th:each="news : ${newsList}">
                     <div th:replace="~{fragments/news-card :: newsCard(${news})}"></div>
-                </div>
+                </th:block>
             </div>
 
             <!-- ЗАГЛУШКА -->
@@ -217,58 +217,192 @@
 </footer>
 
 <script>
-    // Простой стабильный слайдер
-    function scrollNews(direction) {
+    let currentSlide = 0;
+    let autoScrollInterval;
+
+    function getCardWidth() {
+        const slider = document.getElementById('newsSlider');
+        if (!slider) return 390;
+        const card = slider.querySelector('.slide');
+        if (!card) return 390;
+        return card.getBoundingClientRect().width + 20;
+    }
+
+    function getTotalNews() {
+        const slider = document.getElementById('newsSlider');
+        return slider ? slider.querySelectorAll('.slide').length : 0;
+    }
+
+    function getTotalPositions() {
+        const total = getTotalNews();
+        if (total <= 3) return 1;
+        return total - 2;
+    }
+
+    function getDotCount() {
+        const total = getTotalNews();
+        if (total <= 3) return 0;
+        if (total <= 5) return 2;
+        return 3;
+    }
+
+    function scrollToPosition(position, smooth) {
         const slider = document.getElementById('newsSlider');
         if (!slider) return;
 
-        const card = slider.querySelector('.slide');
-        if (!card) return;
+        const totalNews = getTotalNews();
+        if (totalNews <= 3) return;
 
-        const scrollAmount = card.offsetWidth + 20;
-        slider.scrollBy({
-            left: direction * scrollAmount,
-            behavior: 'smooth'
+        const totalPositions = getTotalPositions();
+
+        // Зацикливание
+        if (position >= totalPositions) {
+            position = position % totalPositions;
+        } else if (position < 0) {
+            position = (position % totalPositions + totalPositions) % totalPositions;
+        }
+
+        currentSlide = position;
+
+        slider.scrollTo({
+            left: position * getCardWidth(),
+            behavior: smooth ? 'smooth' : 'auto'  // 🔑 мгновенный или плавный
         });
+
+        updateDots();
     }
 
-    // Показываем кнопки только если есть что скроллить
-    function updateNavigation() {
-        const nav = document.getElementById('newsNavigation');
+    function updateDots() {
+        const container = document.getElementById('sliderDots');
+        if (!container) return;
+
+        const totalNews = getTotalNews();
+        const dotCount = getDotCount();
+
+        container.innerHTML = '';
+
+        if (dotCount === 0) {
+            container.style.display = 'none';
+            return;
+        }
+
+        container.style.display = 'flex';
+
+        const totalPositions = getTotalPositions();
+
+        let activeDot;
+        if (currentSlide === 0) {
+            activeDot = 0;
+        } else if (currentSlide >= totalPositions - 1) {
+            activeDot = dotCount - 1;
+        } else {
+            activeDot = 1;
+        }
+
+        for (let i = 0; i < dotCount; i++) {
+            const dot = document.createElement('button');
+            dot.classList.add('slider-dot');
+            if (i === activeDot) dot.classList.add('active');
+
+            dot.addEventListener('click', () => {
+                if (i === 0) {
+                    scrollToPosition(0, true);
+                } else if (i === dotCount - 1) {
+                    scrollToPosition(totalPositions - 1, true);
+                } else {
+                    scrollToPosition(Math.floor(totalPositions / 2), true);
+                }
+            });
+
+            container.appendChild(dot);
+        }
+    }
+
+    function scrollNews(direction) {
+        const totalPositions = getTotalPositions();
+        let nextPosition = currentSlide + direction;
+
+        // 🔑 Проверка на зацикливание
+        if (nextPosition >= totalPositions) {
+            // Прыгаем мгновенно в 0
+            scrollToPosition(0, false);
+            return;
+        } else if (nextPosition < 0) {
+            // Прыгаем мгновенно в конец
+            scrollToPosition(totalPositions - 1, false);
+            return;
+        }
+
+        // Обычный плавный скролл
+        scrollToPosition(nextPosition, true);
+    }
+
+    function getActualPositionFromScroll() {
         const slider = document.getElementById('newsSlider');
-        if (!nav || !slider) return;
-
-        const canScroll = slider.scrollWidth > slider.offsetWidth + 10;
-        nav.style.display = canScroll ? 'block' : 'none';
+        if (!slider) return 0;
+        const cardWidth = getCardWidth();
+        return Math.round(slider.scrollLeft / cardWidth);
     }
 
-    // Слайдер фото внутри карточки
-    function moveImg(btn, direction) {
-        const track = btn.parentElement.querySelector('.image-track');
-        if (!track) return;
-        track.scrollBy({
-            left: direction * track.offsetWidth,
-            behavior: 'smooth'
-        });
+    function startAutoScroll() {
+        stopAutoScroll();
+        autoScrollInterval = setInterval(() => scrollNews(1), 6000);
+    }
+
+    function stopAutoScroll() {
+        if (autoScrollInterval) {
+            clearInterval(autoScrollInterval);
+            autoScrollInterval = null;
+        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
         const slider = document.getElementById('newsSlider');
-        if (slider) {
-            setTimeout(updateNavigation, 200);
-            window.addEventListener('resize', updateNavigation);
+        const nav = document.getElementById('newsNavigation');
+
+        if (getTotalNews() > 3) {
+            nav.style.display = 'block';
         }
 
-        // Мобильное меню
-        const mobileBtn = document.querySelector('.mobile-menu-btn');
-        const nav = document.querySelector('nav');
-        if (mobileBtn && nav) {
-            mobileBtn.addEventListener('click', () => {
-                nav.classList.toggle('active');
-                mobileBtn.textContent = nav.classList.contains('active') ? '✕' : '☰';
+        if (slider) {
+            let scrollTimeout;
+            slider.addEventListener('scroll', () => {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    currentSlide = getActualPositionFromScroll();
+                    updateDots();
+                }, 100);
+            });
+        }
+
+        setTimeout(() => {
+            updateDots();
+            startAutoScroll();
+        }, 400);
+
+        const wrapper = document.querySelector('.slider-wrapper');
+        if (wrapper) {
+            wrapper.addEventListener('mouseenter', stopAutoScroll);
+            wrapper.addEventListener('mouseleave', startAutoScroll);
+            wrapper.addEventListener('touchstart', stopAutoScroll, {passive: true});
+            wrapper.addEventListener('touchend', () => {
+                setTimeout(startAutoScroll, 3000);
             });
         }
     });
+</script>
+
+// для прокрута внутри новости
+<script th:if="${newsList != null and !#lists.isEmpty(newsList)}">
+    function moveImg(btn, direction) {
+        var track = btn.parentElement.querySelector('.image-track');
+        if (track && track.children.length > 0) {
+            track.scrollBy({
+                left: direction * track.clientWidth,
+                behavior: 'smooth'
+            });
+        }
+    }
 </script>
 
 </body>
