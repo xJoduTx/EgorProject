@@ -1,0 +1,16 @@
+<form th:action="@{/admin/news}" method="post" enctype="multipart/form-data">
+
+    <input type="text" name="title" placeholder="Заголовок" required>
+
+    <textarea name="text" placeholder="Текст"></textarea>
+
+    <input type="text" name="shortDescription" placeholder="Краткое описание">
+
+    <!-- 🔥 ВОТ ОНО -->
+    <input type="file" name="image">
+
+    <input type="text" name="externalLink" placeholder="Ссылка (если есть)">
+
+    <button type="submit">Создать</button>
+
+</form>

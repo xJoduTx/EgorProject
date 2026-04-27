@@ -1,0 +1,20 @@
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  application:
+    name: league-api
+  datasource:
+    url: jdbc:postgresql://localhost:5432/nssl
+    username: postgres
+    password: 16068676
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+app:
+  upload:
+    dir: uploads

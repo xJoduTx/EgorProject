@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="newsCard(news)" class="slide">
+
+    <!-- IMAGE SLIDER -->
+    <div class="news-image-slider">
+
+        <div class="image-track"
+             th:if="${news != null and news.files != null and !#lists.isEmpty(news.files)}">
+
+            <img th:each="file : ${news.files}"
+                 th:if="${file.type.name() == 'IMAGE'}"
+                 th:src="@{/files/{name}(name=${file.filePath})}"
+                 class="news-image">
+
+        </div>
+
+        <img th:if="${news == null or news.files == null or #lists.isEmpty(news.files)}"
+             src="/resources/no-image.png"
+             class="news-image">
+
+        <button class="img-btn left" onclick="moveImg(this, -1)">‹</button>
+        <button class="img-btn right" onclick="moveImg(this, 1)">›</button>
+
+    </div>
+
+    <!-- CONTENT -->
+    <div class="slide-content">
+
+        <h3 th:text="${news != null ? news.title : 'Без заголовка'}"></h3>
+
+        <p th:text="${news != null ? news.shortDescription : ''}"></p>
+
+        <a th:if="${news != null and news.externalLink != null}"
+           th:href="${news.externalLink}"
+           target="_blank">
+            Перейти →
+        </a>
+
+        <a th:if="${news != null and news.externalLink == null}"
+           th:href="@{/news/{id}(id=${news.id})}">
+            Читать →
+        </a>
+
+        <!-- 🔥 ОДНА КНОПКА НА ВСЕ ФАЙЛЫ -->
+        <div th:if="${news != null and news.id != null and news.files != null and !#lists.isEmpty(news.files)}">
+
+            <a th:href="@{/files/news/{id}/download-all(id=${news.id})}"
+               class="download-btn">
+                Скачать вложения (ZIP)
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+</html>
