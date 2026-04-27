@@ -41,6 +41,12 @@ public class NewsService {
 
                     if (file == null || file.isEmpty()) continue;
 
+                    String originalName = file.getOriginalFilename() != null ? file.getOriginalFilename() : "file";
+
+                    String safeName = originalName
+                            .replaceAll("[—–«»\"']", "-")           // заменяем проблемные тире и кавычки
+                            .replaceAll("[^a-zA-Z0-9._-]", "_");    // оставляем только безопасные символы
+
                     String filename = UUID.randomUUID()
                             + "_" + file.getOriginalFilename();
 

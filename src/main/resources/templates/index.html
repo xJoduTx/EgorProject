@@ -7,6 +7,7 @@
 
     <link rel="icon" type="image/jpeg" th:href="@{/resources/liga_logo_1.jpg}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/index.css}">
 </head>
 
 <body>
@@ -16,33 +17,46 @@
         <div class="container">
             <a th:href="@{/}" class="logo">
                 <img th:src="@{/resources/liga_logo.jpg}">
-                <div class="logo-text">НССЛ ДЖИУ-ДЖИТСУ</div>
+                <div class="logo-text">
+                    НССЛ ДЖИУ-ДЖИТСУ
+                    <span>Национальная спортивная студенческая лига</span>
+                </div>
             </a>
+
+            <button class="mobile-menu-btn">☰</button>
 
             <nav>
                 <ul>
                     <li><a th:href="@{/}">Главная</a></li>
                     <li><a th:href="@{/about}">О лиге</a></li>
                     <li><a th:href="@{/news}">Новости</a></li>
+                    <li><a th:href="@{/documents}">Документы</a></li>
+                    <li><a th:href="@{/media}">Медиатека</a></li>
+                    <li><a th:href="@{/contacts}">Контакты</a></li>
                 </ul>
             </nav>
         </div>
     </div>
 </header>
 
-<!-- HERO (ВОЗВРАЩАЕМ КАК БЫЛО) -->
+<!-- HERO -->
 <section class="hero">
-    <div class="container">
+    <div class="container hero-grid">
 
         <div class="hero-content">
-            <h1>НССЛ ДЖИУ-ДЖИТСУ</h1>
-            <p>Развитие студенческого джиу-джитсу в России</p>
+            <h1>НАЦИОНАЛЬНАЯ СПОРТИВНАЯ СТУДЕНЧЕСКАЯ ЛИГА ДЖИУ-ДЖИТСУ</h1>
+            <p>Развитие студенческого джиу-джитсу в России с декабря 2021 года</p>
+
+            <div class="hero-buttons">
+                <a href="https://vk.com/nsslj" target="_blank" class="btn btn-primary">
+                    Наше сообщество ВКонтакте
+                </a>
+            </div>
         </div>
 
         <div class="hero-image">
             <div class="hero-image-placeholder">
-                <img th:src="@{/resources/mai_photo_index.jpg}"
-                     style="width:100%; height:100%; object-fit:cover; border-radius:8px;">
+                <img th:src="@{/resources/mai_photo_index.jpg}">
             </div>
         </div>
 
@@ -50,60 +64,211 @@
 </section>
 
 <!-- NEWS -->
-<section class="news-slider-section">
+<section class="section news-slider-section">
     <div class="container">
-
         <div class="slider-header">
             <h2>Новости</h2>
             <a th:href="@{/news}">Все новости →</a>
         </div>
 
-        <div class="slider-wrapper">
+        <div class="slider-wrapper" id="newsSliderWrapper">
 
-            <button class="slider-btn left" onclick="scrollNews(-1)">‹</button>
-
-            <div class="slider" id="newsSlider">
-
+            <!-- СЛАЙДЕР НОВОСТЕЙ -->
+            <div class="slider" id="newsSlider" th:if="${newsList != null and !#lists.isEmpty(newsList)}">
                 <div th:each="news : ${newsList}">
                     <div th:replace="~{fragments/news-card :: newsCard(${news})}"></div>
                 </div>
-
             </div>
 
-            <button class="slider-btn right" onclick="scrollNews(1)">›</button>
-
+            <!-- ЗАГЛУШКА -->
+            <div class="no-news" th:if="${newsList == null or #lists.isEmpty(newsList)}">
+                <div class="no-news-content">
+                    <div class="no-news-icon">📰</div>
+                    <h3>Новостей пока нет</h3>
+                    <p>Следите за обновлениями в нашей группе ВКонтакте</p>
+                    <a href="https://vk.com/nsslj" target="_blank" class="btn btn-primary">
+                        Перейти в группу ВК
+                    </a>
+                </div>
+            </div>
         </div>
 
+        <div id="newsNavigation" style="display: none; margin-top: 25px; text-align: center;">
+            <div class="slider-nav">
+                <button onclick="scrollNews(-1)">◀</button>
+                <button onclick="scrollNews(1)">▶</button>
+            </div>
+            <div class="slider-dots" id="sliderDots"></div>
+        </div>
     </div>
 </section>
 
+<!-- About Section -->
+<section class="section about-section">
+    <div class="container">
+        <div class="about-grid">
+            <div class="about-content">
+                <h3>О Лиге</h3>
+                <p>Национальная спортивная студенческая лига джиу-джитсу зарегистрирована в декабре 2021 года как
+                    ассоциация профессионалов с опытом спортивного менеджмента.</p>
+                <p><strong>Учредители Лиги:</strong></p>
+                <ul style="list-style: disc; padding-left: 20px; color: var(--text-light); font-size: 14px; line-height: 1.8;">
+                    <li>Российская Федерация джиу-джитсу</li>
+                    <li>Российский студенческий спортивный союз</li>
+                </ul>
+                <p style="margin-top: 15px;"><strong>Президент Лиги - Волков Андрей Владимирович:</strong> заслуженный
+                    тренер России — мастер спорта СССР.</p>
+                <a href="about.html" class="btn btn-primary" style="margin-top: 20px;">Подробнее о лиге</a>
+            </div>
+            <div class="about-stats">
+                <div class="stat-card">
+                    <span class="stat-number">5+</span>
+                    <span class="stat-label">Лет развития</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Команд участников</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">20+</span>
+                    <span class="stat-label">Турниров проведено</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">1000+</span>
+                    <span class="stat-label">Спортсменов</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Partners Section -->
+<section class="section partners-section">
+    <div class="container">
+        <h2 class="section-title">Партнёры Лиги</h2>
+        <div class="partners-grid">
+            <div class="partner-card">
+                <div class="partner-logo">🇷🇺</div>
+                <h4>Российская Федерация джиу-джитсу</h4>
+            </div>
+            <div class="partner-card">
+                <div class="partner-logo">🎓</div>
+                <h4>Российский студенческий спортивный союз</h4>
+            </div>
+            <div class="partner-card">
+                <div class="partner-logo">🏛️</div>
+                <h4>Минспорт России</h4>
+            </div>
+            <div class="partner-card">
+                <div class="partner-logo">🏫</div>
+                <h4>Университет ИТМО</h4>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+    <div class="container">
+        <h2>Хотите стать частью Лиги?</h2>
+        <p>Приглашаем образовательные организации, клубы и студентов</p>
+        <a th:href="@{/contacts}" class="btn btn-primary white"
+           style="background-color: var(--white); color: var(--secondary-color);">Подать заявку</a>
+    </div>
+</section>
+
+<!-- FOOTER -->
 <footer>
-    <p>© 2021–2026 НССЛ</p>
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-about">
+                <h3>НССЛ ДЖИУ-ДЖИТСУ</h3>
+                <p>Национальная спортивная студенческая лига джиу-джитсу — развитие студенческого спорта в России с
+                    декабря 2021 года.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Разделы</h4>
+                <ul>
+                    <li><a href="about.html">О лиге</a></li>
+                    <li><a href="news.html">Новости</a></li>
+                    <li><a href="documents.html">Документы</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Информация</h4>
+                <ul>
+                    <li><a href="media.html">Медиатека</a></li>
+                    <li><a href="contacts.html">Контакты</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h4>Контакты</h4>
+                <div class="footer-contact-info">
+                    <p>✉️ <a href="mailto:vareznikovegor@gmail.com">vareznikovegor@gmail.com</a></p>
+                    <p>🔗 <a href="#">@egorvarezhnikov</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2021–2026 Национальная спортивная студенческая лига джиу-джитсу</p>
+        </div>
+    </div>
 </footer>
 
 <script>
-    const slider = document.getElementById("newsSlider");
+    // Простой стабильный слайдер
+    function scrollNews(direction) {
+        const slider = document.getElementById('newsSlider');
+        if (!slider) return;
 
-    function scrollNews(dir) {
-        const card = slider.querySelector(".slide");
-        const width = card ? card.offsetWidth + 20 : 350;
+        const card = slider.querySelector('.slide');
+        if (!card) return;
 
+        const scrollAmount = card.offsetWidth + 20;
         slider.scrollBy({
-            left: dir * width,
-            behavior: "smooth"
+            left: direction * scrollAmount,
+            behavior: 'smooth'
         });
     }
 
-    function moveImg(btn, dir) {
-        const track = btn.parentElement.querySelector(".image-track");
-        const img = track.querySelector("img");
-        const width = img ? img.offsetWidth : 300;
+    // Показываем кнопки только если есть что скроллить
+    function updateNavigation() {
+        const nav = document.getElementById('newsNavigation');
+        const slider = document.getElementById('newsSlider');
+        if (!nav || !slider) return;
 
+        const canScroll = slider.scrollWidth > slider.offsetWidth + 10;
+        nav.style.display = canScroll ? 'block' : 'none';
+    }
+
+    // Слайдер фото внутри карточки
+    function moveImg(btn, direction) {
+        const track = btn.parentElement.querySelector('.image-track');
+        if (!track) return;
         track.scrollBy({
-            left: dir * width,
-            behavior: "smooth"
+            left: direction * track.offsetWidth,
+            behavior: 'smooth'
         });
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const slider = document.getElementById('newsSlider');
+        if (slider) {
+            setTimeout(updateNavigation, 200);
+            window.addEventListener('resize', updateNavigation);
+        }
+
+        // Мобильное меню
+        const mobileBtn = document.querySelector('.mobile-menu-btn');
+        const nav = document.querySelector('nav');
+        if (mobileBtn && nav) {
+            mobileBtn.addEventListener('click', () => {
+                nav.classList.toggle('active');
+                mobileBtn.textContent = nav.classList.contains('active') ? '✕' : '☰';
+            });
+        }
+    });
 </script>
 
 </body>
